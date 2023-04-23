@@ -7,6 +7,7 @@ import logging
 import string
 import colorama
 from colorama import Fore, Back, Style
+import time
 
 colorama.init(autoreset=True)
 
@@ -53,10 +54,12 @@ def getKeyPress(e):
             else:
                 print(f"{Fore.CYAN}That's a right guess")
                 resetVar(keypress)
+                isCorrect(True, keypress)
         else:
             incorrect_guesses +=1
             incorrect_guesses_var.set(f"Incorrect Guesses: {incorrect_guesses}")
             print(f"{Fore.RED}Incorrect Guess")
+            isCorrect(False, keypress)
             if incorrect_guesses == incorrect_guesses_limit:
                 print(f"{Fore.LIGHTYELLOW_EX}Limit Reached")
                 result = messagebox.askretrycancel(f"Do you want to play again?", f"{random.choice(insults)}")
@@ -81,11 +84,19 @@ def resetVar(letter):
     word_label_var.set(hidden_word)
     checkState()
 
+def isCorrect(correct: bool, last_guess: str):
+    if correct:
+        was_correct_var.set(f"Last guess '{last_guess}': Correct!")
+        pass
+
+    else:
+        was_correct_var.set(f"Last guess '{last_guess}':Wrong!")
+    pass
     
 def checkState():
     if correct_guesses == len(system_word_choice[0]):
         print(f"{Fore.GREEN}Game won")
-        result = messagebox.askretrycancel("Do you want to try again", "Not bad, next time :)")
+        result = messagebox.askretrycancel("Do you want to try again", "You won!,\nNot bad, next time :)")
         if result:
             restart_game()
         else:
@@ -121,6 +132,7 @@ word_label_var = tk.StringVar(value=hidden_word)
 correct_guesses = 0
 score_label_var = tk.StringVar(value=f"Correct Guesses: {correct_guesses}")
 incorrect_guesses_var = tk.StringVar(value=f"Incorrect Guesses: {incorrect_guesses}")
+was_correct_var = tk.StringVar(value=f"Last guess: ")
 
 word_label = ttk.Label(window, text='', textvariable=word_label_var, font=('Calibri', 30))
 word_label.pack(pady=5)
@@ -134,6 +146,8 @@ score_label.pack(pady=20)
 incorrect_guesses_label = ttk.Label(window, textvariable=incorrect_guesses_var)
 incorrect_guesses_label.pack()
 
+was_correct = ttk.Label(window, text=f"", textvariable=was_correct_var)
+was_correct.pack()
 
 
 # Security event
